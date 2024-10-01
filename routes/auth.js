@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const Workout = require('../models/workout');
+const Workout = require('../models/workout')
 const dotenv = require('dotenv');
 const getResult = require('../models/gemini');
 dotenv.config();
@@ -19,7 +19,9 @@ router.post('/signup', async (req, res) => {
 
     try {
         let user = await User.findOne({ email });
-       
+        // if (user) {
+        //     return res.status(400).json({ success: false, msg: 'User already exists' });
+        // }
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
@@ -27,25 +29,38 @@ router.post('/signup', async (req, res) => {
         const bmi = calculateBMI(weight, height);
 
         const workoutPlan = await getResult(bmi, age, gender, type);
-        console.log(workoutPlan);
+        // console.log(workoutPlan['0']);
+        for (let key in workoutPlan) {
+            if (workoutPlan.hasOwnProperty(key)) {
+                const workouts = workoutPlan[key].workout;
+                // console.log(`Workout for day ${key}:`);
+                for (let i = 0; i < workouts.length; i++) {
+                    const workoutdata = await Workout.create({
+                        userid:email,
+                        week:key,
+                        workoutId:workouts[i].id,
+                        name:workouts[i].name,
+                        reps:workouts[i].reps,
+                        sets:workouts[i].sets
+                      });
+                    //   console.log("DAta saved");
+                    // console.log(`- ${workouts[i].name}: ${workouts[i].reps} reps, ${workouts[i].sets} sets`);
+                }
+            }
+        }
+        // console.log(workoutPlan);
         user = new User({
-            name,
-            email,
+            name : name,
+            email : email,
             password: hashedPassword,
         });
 
         await user.save();
         console.log("user is saved");
-        const workout = new Workout({
-            user: email,
-            plans: workoutPlan
-        });
-
-        await workout.save();
 
         const payload = {
             user: {
-                id: user.id,
+                id: user.email,
                 email: user.email,
             },
         };

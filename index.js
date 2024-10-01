@@ -5,7 +5,7 @@ require('dotenv').config();
 const work = require('./routes/getWorkout');
 const app = express();
 const PORT = process.env.PORT || 4000;
-
+const getPlan = require('./routes/getPlan')
 // Middleware
 app.use(cors({
     origin: true,
@@ -17,7 +17,7 @@ app.use('/work', work);
 // Routes
 const auth = require('./routes/auth');
 app.use(auth); // Make sure to define the base path for auth routes
-
+app.use('/api', getPlan);
 // Logging middleware
 app.use((req, res, next) => {
     console.log('Request Method:', req.method);

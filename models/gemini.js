@@ -70,7 +70,7 @@ const getResult = async ({ bmi, age, gender, type }) => {
         
         
         const data = JSON.parse(object);
-
+        console.log(data['0']);
         return data;
     } catch (error) {
         console.log(error);
