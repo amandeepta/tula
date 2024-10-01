@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const Workout = require('../models/workout');
-
-router.get('/getPlans', async (req, res) => {
+router.post('/getPlans', async (req, res) => {
     try {
-        const { id, week } = req.body;
+        const { id, week } = req.body || req.query;
         console.log(id);
         console.log(week);
         const plans = await Workout.find({

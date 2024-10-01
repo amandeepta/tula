@@ -4,7 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 const work = require('./routes/getWorkout');
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5001;
 const getPlan = require('./routes/getPlan')
 // Middleware
 app.use(cors({
